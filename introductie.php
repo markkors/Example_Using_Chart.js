@@ -27,7 +27,7 @@
 </head>
 <body>
 
-<h1>chart.js</h1>
+<h1>Demonstratie chart.js</h1>
 
 <p>
     De nieuwste versie van Chart.js krijgen via npm, de GitHub-releases of door een Chart.js CDN gebruiken.
@@ -70,42 +70,111 @@
     <canvas id="myChart1"></canvas>
 </div>
 
-<div class="graph-container">
-    <div>Staaf grafiek met data via PHP array</div>
-    <canvas id="myChart2"></canvas>
-</div>
+<p>In bovenstaande grafiek is de data 'hardcoded' ingeladen via Javascript. Dit inladen worden gedaan middels het onderstaande script:</p>
 
-
-<script>
-    //const ctx = document.getElementById('myChart');
-    const ctx1 = 'myChart1';
+<pre>
+    <code class="language-javascript">
+    const ctx1 = document.getElementById('myChart1');
     const myChart1 = new Chart(ctx1, {
         type: 'bar',
         data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: ['Amersfoort', 'Amsterdam', 'Rotterdam', 'Utrecht', 'Almere', 'Haarlem'],
             datasets: [{
-                label: '# of Votes',
+                label: 'Aantal stemmen',
                 data: [12, 19, 3, 5, 2, 3],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 99, 132, 0.2)'
                 ],
                 borderColor: [
                     'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 99, 132, 1)'
                 ],
                 borderWidth: 1
             }]
         },
         options: {
+
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    </code>
+</pre>
+
+<div class="graph-container">
+    <div>Staaf grafiek met data via PHP array</div>
+    <canvas id="myChart2"></canvas>
+</div>
+
+<p>
+    In de grafiek hierboven wordt de data wederom 'hardcoded' via een PHP pagina ingeladen. Het verschil met de vorige grafiek is nu dat de grafiek iedere seconde wordt ge-update.
+    Dit updaten vindt plaats middels de <strong>setInterval()</strong> functie binnen Javascript. Deze functie zorgt ervoor dat iedere seconde de
+    <strong>fetch()</strong> functie wordt aangeroepen welke verantwoordelijk is voor
+    het ophalen van de data.
+</p>
+
+<pre>
+    <code class="language-javascript">
+        let myChart = null;
+        const ctx = document.getElementById("myChart2");
+        setInterval(function() {
+            fetch('http://localhost:8000/chart_data.php')
+                .then((response) => response.json())
+                .then((data) => {
+                    if (myChart === null) {
+                        myChart = createBarGraph(data,ctx);
+                    } else {
+                        myChart.data.datasets[0].data = data.datasets.data;
+                        myChart.update();
+                    }
+
+                });
+        },1000);
+    </code>
+</pre>
+
+<script>
+    const ctx1 = document.getElementById('myChart1');
+    const myChart1 = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: ['Amersfoort', 'Amsterdam', 'Rotterdam', 'Utrecht', 'Almere', 'Haarlem'],
+            datasets: [{
+                label: 'Aantal stemmen',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 99, 132, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+
             scales: {
                 y: {
                     beginAtZero: true
@@ -132,7 +201,7 @@ setInterval(function() {
             }
 
         });
-},1000);
+},250);
 
 
 
