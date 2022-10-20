@@ -145,6 +145,15 @@
     </code>
 </pre>
 
+<div class="graph-container">
+    <div>Staaf grafiek met data via PHP array en POST payload</div>
+    <canvas id="myChart3"></canvas>
+</div>
+
+<button onclick="fetch_with_payload(document.getElementById('title').value);">show</button>
+<input type="text" id="title" placeholder="titel hier">
+
+
 <script>
     const ctx1 = document.getElementById('myChart1');
     const myChart1 = new Chart(ctx1, {
@@ -205,31 +214,53 @@ setInterval(function() {
 
 
 
+let myGraph2 = null;
+function fetch_with_payload(t) {
 
-    function createBarGraph(o,ctx) {
-        const myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: o.labels,
-                datasets: [{
-                    label: o.datasets.label,
-                    data: o.datasets.data,
-                    backgroundColor: o.datasets.backgroundColor,
-                    borderColor: o.datasets.borderColor,
-                    borderWidth: o.datasets.borderWidth
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max:20
-                    }
+    let payload = {"action":t,backgroundcolor: "rgba(126, 12, 135, 0.5)"};
+    const ctx = document.getElementById("myChart3");
+
+    fetch('http://localhost:8000/chart_data.php', {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if(myGraph2 !== null) {
+            myGraph2.destroy();
+        }
+        myGraph2 = createBarGraph(data,ctx);
+    });
+}
+
+
+function createBarGraph(o,ctx) {
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: o.labels,
+            datasets: [{
+                label: o.datasets.label,
+                data: o.datasets.data,
+                backgroundColor: o.datasets.backgroundColor,
+                borderColor: o.datasets.borderColor,
+                borderWidth: o.datasets.borderWidth
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max:20
                 }
             }
-        });
-        return myChart;
-    }
+        }
+    });
+    return myChart;
+}
 </script>
 
 
