@@ -154,6 +154,40 @@
 <input type="text" id="title" placeholder="titel hier">
 
 
+
+<p>
+    In de grafiek hierboven wordt de data wederom 'hardcoded' via een PHP pagina ingeladen. Het verschil met de vorige grafiek is dat deze in eerste instantie leeg is.
+    Je plaatst de grafiek door op de <strong>show</strong> knop te drukken. Het invullen van de textbox zorgt voor een custom titel. Er wordt nu een Javascript object via fetch inclusief de
+    <strong>post</strong> methode
+    verstuurd om daar vervolgens mee aan de slag te gaan in <strong>chart_data.php</strong>.
+
+</p>
+
+<pre>
+    <code class="language-javascript">
+let myGraph2 = null;
+function fetch_with_payload(t) {
+    let payload = {"action":t,backgroundcolor: "rgba(126, 12, 135, 0.5)"};
+    const ctx = document.getElementById("myChart3");
+    fetch('http://localhost:8000/chart_data.php', {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if(myGraph2 !== null) {
+            myGraph2.destroy();
+        }
+        myGraph2 = createBarGraph(data,ctx);
+    });
+}
+
+    </code>
+</pre>
+
 <script>
     const ctx1 = document.getElementById('myChart1');
     const myChart1 = new Chart(ctx1, {
@@ -216,10 +250,8 @@ setInterval(function() {
 
 let myGraph2 = null;
 function fetch_with_payload(t) {
-
     let payload = {"action":t,backgroundcolor: "rgba(126, 12, 135, 0.5)"};
     const ctx = document.getElementById("myChart3");
-
     fetch('http://localhost:8000/chart_data.php', {
         method: 'POST', // or 'PUT'
         headers: {
